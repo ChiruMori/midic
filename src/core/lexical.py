@@ -4,7 +4,9 @@ __author__ = "mori"
 import os
 import re
 
-from .core.CompileError import LexicalError
+from ..midi.midi_reader import MidiReader
+
+from .compile_error import LexicalError
 
 LETTER_RE = "^[a-zA-Z]$"  # 匹配单字母
 DIGIT_RE = "^\\d$"  # 匹配单数字
@@ -42,23 +44,17 @@ class LexicalAnalyse:
         "continue",
     ]  # 保留字
 
-    def __init__(self, file_in, file_out="out.tfs"):
+    def __init__(self, file_in):
         """
         构造
-        :param file_in: 传入文件名
+        :param file_in: 传入的 MIDI 文件名
         """
-        # 正则表达式实现保留字匹配
-        # self.keyword_re = '^['
-        # for keyword in self.__keyword:  # 生成正则表达式
-        #     self.keyword_re += keyword  # 拼接关键字
-        #     self.keyword_re += '|'  # 拼接关键字分隔符
-        # self.keyword_re = self.keyword_re[:-1]  # 去掉多余的|
-        # self.keyword_re += ']$'
         if os.path.exists(file_in):
             self.new_id = False  # 新读取ID的标记，读取到int时值为true
-            self.file = open(file_in, "r", encoding="utf-8")
+            self.midi_reader = iter(MidiReader(file_in))
             self.line_num = 1  # 初始化行号
             self.__keyword.sort()  # 保留字排序，用于二分查找
+            file_out = "out/lexical.o"
             self.out_file = open(file_out, "w+", encoding="utf-8")
             self.out_filename = file_out  # 保存输出文件名
         else:
@@ -88,6 +84,9 @@ class LexicalAnalyse:
                 elif temp_char == "/":
                     # 读到/，进行注释与'/'处理
                     temp_char = self.__read_comment(temp_char)
+                elif temp_char == '\0':
+                    # 读到文件结束符
+                    break
                 else:
                     raise LexicalError(
                         self.line_num,
@@ -96,8 +95,11 @@ class LexicalAnalyse:
                         ),
                     )
             except LexicalError as e:
-                temp_char = self.__read_char()  # 发生错误时，继续读取下一个字符，如果需要发生错误时停止，将try-catch放到循环外
                 e.print()  # 错误输出
+                if self.midi_reader.has_msg():
+                    temp_char = self.__read_char()  # 发生错误时，继续读取下一个字符，如果需要发生错误时停止，将try-catch放到循环外
+                else:
+                    break
         return self.out_filename  # 返回单词流文件名
 
     def __read_comment(self, last_char):
@@ -245,15 +247,18 @@ class LexicalAnalyse:
         """
         关闭文件流，词法分析结束后调用
         """
-        self.file.close()
         self.out_file.close()
 
     def __read_char(self):
-        temp_char = self.file.read(1)
-        if temp_char == "\n":
-            self.out_file.write(
-                "{0}\n".format("[enter]")
-            )  # 单词输出到文件，输出单词与行号
-            self.line_num += 1
-            temp_char = " "  # 行号加1，转为空格
-        return temp_char
+        try:
+            # 将读取到的一个字节数据直接转为字符
+            temp_char = chr(next(self.midi_reader))
+            if temp_char == "\n":
+                self.out_file.write(
+                    "{0}\n".format("[enter]")
+                )  # 单词输出到文件，输出单词与行号
+                self.line_num += 1
+                temp_char = " "  # 行号加1，转为空格
+            return temp_char
+        except StopIteration:
+            return ""

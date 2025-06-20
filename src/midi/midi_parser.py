@@ -50,6 +50,7 @@ def from_char(key: str, c: str) -> list[int]:
             res.append(note)
     return res
 
+
 def to_char(key: str, notes: list[int]) -> str:
     """
     将音符转换为字符
@@ -64,3 +65,14 @@ def to_char(key: str, notes: list[int]) -> str:
         if note in notes:
             valid_bits |= 1 << i
     return chr(valid_bits)
+
+
+def get_score_bit(key: str, note: int) -> int:
+    if key not in key_dict:
+        raise ValueError("Invalid key signature")
+    alphabet = key_dict[key]
+    for i, a_note in enumerate(alphabet):
+        if a_note == note:
+            return 1 << i
+    # 不在音符表，忽略
+    return 0

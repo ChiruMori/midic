@@ -1,5 +1,5 @@
 # 虚拟机
-from .core.CompileError import TestRuntimeError, DIVISOR_IS_0, STACK_OVERFLOW
+from .compile_error import TestRuntimeError, DIVISOR_IS_0, STACK_OVERFLOW
 
 __author__ = "mori"
 

@@ -1,7 +1,7 @@
 # 语法分析程序
 from queue import Queue
 
-from core.CompileError import (
+from .compile_error import (
     LACK_FUNCTION_BODY,
     LACK_FUNCTION_NAME,
     LACK_LEFT_PARE,
@@ -17,7 +17,7 @@ __author__ = "mori"
 import re
 
 # 避免使用通配符导入，显式导入需要的异常类
-from .core.CompileError import (
+from .compile_error import (
     GrammarError,
     LACK_MAIN_DECL,
     UNEXPECTED_END,
@@ -33,8 +33,8 @@ from .core.CompileError import (
     LACK_CASE,
     LACK_COLON,
 )
-from .core.GrammarTree import GrammarTree as Tree
-from .core.signary import Scope
+from .grammar_tree import GrammarTree as Tree
+from .signary import Scope
 
 LOGIC_RE = "^([<>!=]=)|&{2}|\\|{2}|[<>]$"  # 匹配逻辑运算符 <= >= != == < > || &&
 

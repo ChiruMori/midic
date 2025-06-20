@@ -40,7 +40,7 @@ class GrammarTree:
         """
         打印语法树，深度优先搜索
         """
-        out_file = open('out.tree', 'w+', encoding='utf-8')  # 初始化语法树输出文件
+        out_file = open('out/grammar.o', 'w+', encoding='utf-8')  # 初始化语法树输出文件
         print_all(self.root, out_file)
         if self.now_node is not self.root:
             raise RuntimeError("语法树未回溯至根节点，请检查语法结构")

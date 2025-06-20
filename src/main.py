@@ -1,16 +1,16 @@
 # 主控程序
 import os
 import sys
-from .core.CompileError import TestRuntimeError
+from .core.compile_error import TestRuntimeError
 
 __author__ = 'mori'
 
-from .core import lexical, CompileError as CE
+from .core import lexical, compile_error as CE
 from .core import grammar, semantic, machine
 
 
 def main(midi_path: str):
-    lexical_exe = lexical.LexicalAnalyse('machine2.test', file_out='out.test')  # 打开文件
+    lexical_exe = lexical.LexicalAnalyse(midi_path)  # 打开文件
     lexical_file = lexical_exe.analyse()  # 进行词法分析，得到单词流文件
     lexical_exe.close()  # 关闭文件
 

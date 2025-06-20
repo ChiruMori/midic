@@ -9,14 +9,15 @@
             "type": "debugpy",
             "request": "launch",
             "module": "src.main",
-            "args": "tests/hello.mid"
+            "args": "tests/t01.mid"
         },
         {
             "name": "Midi 生成",
             "type": "debugpy",
             "request": "launch",
-            "module": "src.core.midi.midi_writer",
-            "args": "${command:pickArgs}"
+            "module": "src.midi.midi_writer",
+            // "args": "${command:pickArgs}"
+            "args": "tests/t02.mc tests/t02.mid"
         }
     ]
 }
